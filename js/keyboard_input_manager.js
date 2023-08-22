@@ -3,13 +3,13 @@ function KeyboardInputManager() {
 
   if (window.navigator.msPointerEnabled) {
     //Internet Explorer 10 style
-    this.eventTouchstart    = "MSPointerDown";
-    this.eventTouchmove     = "MSPointerMove";
-    this.eventTouchend      = "MSPointerUp";
+    this.eventTouchstart = "MSPointerDown";
+    this.eventTouchmove = "MSPointerMove";
+    this.eventTouchend = "MSPointerUp";
   } else {
-    this.eventTouchstart    = "touchstart";
-    this.eventTouchmove     = "touchmove";
-    this.eventTouchend      = "touchend";
+    this.eventTouchstart = "touchstart";
+    this.eventTouchmove = "touchmove";
+    this.eventTouchend = "touchend";
   }
   this.listen();
 }
@@ -32,7 +32,9 @@ KeyboardInputManager.prototype.emit = function (event, data) {
 
 KeyboardInputManager.prototype.listen = function () {
   var self = this;
-  window.autoFall = setTimeout(function(){self.emit("move", 4);}, window.timeOut);
+  window.autoFall = setTimeout(function () {
+    self.emit("move", 4);
+  }, window.timeOut);
 
   var map = {
     // 38: 0, // Up
@@ -46,29 +48,36 @@ KeyboardInputManager.prototype.listen = function () {
     // 87: 0, // W
     68: 1, // D
     83: 2, // S
-    65: 3  // A
+    65: 3, // A
   };
 
   function action(event) {
-    var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
-                    event.shiftKey;
-    var mapped    = map[event.which];
+    var modifiers =
+      event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+    var mapped = map[event.which];
 
     if (!modifiers) {
       if (mapped !== undefined) {
         event.preventDefault();
         clearTimeout(window.autoFall);
         var elem = document.getElementById("Pause");
-        if(elem.innerHTML != "||") elem.innerHTML = "||";
-        autoFall = setTimeout(function(){self.emit("move", 4);}, window.timeOut);
+        if (elem.innerHTML != "||") elem.innerHTML = "||";
+        autoFall = setTimeout(function () {
+          self.emit("move", 4);
+        }, window.timeOut);
         self.emit("move", mapped);
       }
 
-      if (event.which === 32) { event.preventDefault(); pause(); }
+      if (event.which === 32) {
+        event.preventDefault();
+        pause();
+      }
     }
   }
 
-  document.addEventListener("keydown", function(event) {action(event);});
+  document.addEventListener("keydown", function (event) {
+    action(event);
+  });
 
   var retry = document.querySelector(".retry-button");
   retry.addEventListener("click", this.restart.bind(this));
@@ -83,16 +92,20 @@ KeyboardInputManager.prototype.listen = function () {
   var gameContainer = document.getElementsByClassName("game-container")[0];
 
   gameContainer.addEventListener(this.eventTouchstart, function (event) {
-    if (( !window.navigator.msPointerEnabled && event.touches.length > 1) || event.targetTouches > 1) return;
-    
-    if(window.navigator.msPointerEnabled){
-        touchStartClientX = event.pageX;
-        touchStartClientY = event.pageY;
+    if (
+      (!window.navigator.msPointerEnabled && event.touches.length > 1) ||
+      event.targetTouches > 1
+    )
+      return;
+
+    if (window.navigator.msPointerEnabled) {
+      touchStartClientX = event.pageX;
+      touchStartClientY = event.pageY;
     } else {
-        touchStartClientX = event.touches[0].clientX;
-        touchStartClientY = event.touches[0].clientY;
+      touchStartClientX = event.touches[0].clientX;
+      touchStartClientY = event.touches[0].clientY;
     }
-    
+
     event.preventDefault();
   });
 
@@ -101,15 +114,19 @@ KeyboardInputManager.prototype.listen = function () {
   });
 
   gameContainer.addEventListener(this.eventTouchend, function (event) {
-    if (( !window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches > 0) return;
+    if (
+      (!window.navigator.msPointerEnabled && event.touches.length > 0) ||
+      event.targetTouches > 0
+    )
+      return;
 
     var touchEndClientX, touchEndClientY;
-    if(window.navigator.msPointerEnabled){
-        touchEndClientX = event.pageX;
-        touchEndClientY = event.pageY;
+    if (window.navigator.msPointerEnabled) {
+      touchEndClientX = event.pageX;
+      touchEndClientY = event.pageY;
     } else {
-        touchEndClientX = event.changedTouches[0].clientX;
-        touchEndClientY = event.changedTouches[0].clientY;
+      touchEndClientX = event.changedTouches[0].clientX;
+      touchEndClientY = event.changedTouches[0].clientY;
     }
 
     var dx = touchEndClientX - touchStartClientX;
@@ -120,7 +137,7 @@ KeyboardInputManager.prototype.listen = function () {
 
     if (Math.max(absDx, absDy) > 10) {
       // (right : left) : (down : up)
-      self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 4));
+      self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 4);
     }
   });
 };
